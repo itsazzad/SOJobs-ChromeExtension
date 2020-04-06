@@ -2,9 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="824e160d-3b26-4674-9125-394eab9bbe8a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/options.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/options.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/popup.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/popup.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/scripts.babel/background.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/scripts.babel/background.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/scripts.babel/contentscript.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/scripts.babel/contentscript.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/scripts.babel/options.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/scripts.babel/options.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/scripts.babel/popup.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/scripts.babel/popup.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +47,9 @@
       <updated>1585628667289</updated>
       <workItem from="1585628671343" duration="4280000" />
       <workItem from="1585960722610" duration="846000" />
-      <workItem from="1585968801022" duration="2007000" />
+      <workItem from="1585968801022" duration="4824000" />
+      <workItem from="1585988480693" duration="25272000" />
+      <workItem from="1586195955237" duration="659000" />
     </task>
     <servers />
   </component>
@@ -50,13 +57,17 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="588" y="214" width="800" height="677" key="#Inspections" timestamp="1586149837014">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="588" y="214" width="800" height="677" key="#Inspections/67.27.1853.1053@67.27.1853.1053" timestamp="1586149837014" />
     <state x="482" y="187" key="SettingsEditor" timestamp="1585968904292">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="482" y="187" key="SettingsEditor/67.27.1853.1053@67.27.1853.1053" timestamp="1585968904292" />
-    <state x="631" y="95" width="724" height="915" key="find.popup" timestamp="1585969157221">
+    <state x="631" y="95" width="884" height="915" key="find.popup" timestamp="1586136903370">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="631" y="95" width="724" height="915" key="find.popup/67.27.1853.1053@67.27.1853.1053" timestamp="1585969157221" />
+    <state x="631" y="95" width="884" height="915" key="find.popup/67.27.1853.1053@67.27.1853.1053" timestamp="1586136903370" />
   </component>
 </project>

@@ -17,15 +17,13 @@
   },
   "permissions": [
     "tabs",
-    "http://*/*",
-    "https://*/*",
     "background",
     "bookmarks",
     "clipboardRead",
     "clipboardWrite",
     "contentSettings",
     "cookies",
-    "*://*.google.com/",
+    "*://*.stackoverflow.com/*",
     "debugger",
     "history",
     "idle",
@@ -38,15 +36,10 @@
     "webRequest",
     "webRequestBlocking"
   ],
-  "options_ui": {
-    "page": "options.html",
-    "chrome_style": true
-  },
   "content_scripts": [
     {
       "matches": [
-        "http://*/*",
-        "https://*/*"
+        "https://stackoverflow.com/*"
       ],
       "js": [
         "scripts/contentscript.js"
@@ -55,15 +48,12 @@
       "all_frames": false
     }
   ],
-  "omnibox": {
-    "keyword": "OMNIBOX-KEYWORD"
-  },
   "page_action": {
     "default_icon": {
       "19": "images/icon-19.png",
       "38": "images/icon-38.png"
     },
-    "default_title": "sojobs",
+    "default_title": "SOJobs",
     "default_popup": "popup.html"
   },
   "web_accessible_resources": [
