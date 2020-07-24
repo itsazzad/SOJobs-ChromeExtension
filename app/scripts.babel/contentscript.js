@@ -16,7 +16,7 @@ const start = () => {
     });
     let key = `jobid-${item.dataset.jobid}`;
     let value = JSON.stringify(data);
-    chrome.storage.local.set({[key]: value}, () => {
+    chrome.storage.local.set({ [key]: value }, () => {
       // console.log(key, value);
     });
   });
@@ -26,7 +26,7 @@ const processData = () => {
   chrome.storage.local.get(null, (obj) => {
     // console.log(obj);
     const allKeys = Object.keys(obj);
-    console.log(allKeys);
+    // console.log(allKeys);
 
     const tagsByCompany = {};
     for (const prop in obj) {
@@ -46,6 +46,7 @@ const processData = () => {
         });
       }
     }
+    console.log(tagsByCompany);
     processCompanyForTags(tagsByCompany);
   });
 };
@@ -72,7 +73,8 @@ const processCompanyForTags = (data) => {
   const output = Object.entries(countByTags).sort(
     (a, b) => b[1] - a[1]
   );
-  // console.log(output);
+  console.log(output);
+
   const objSorted = {};
   output.forEach(item => {
     objSorted[item[0]] = item[1]
