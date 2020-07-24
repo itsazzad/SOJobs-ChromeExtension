@@ -24,6 +24,7 @@
     "contentSettings",
     "cookies",
     "*://*.stackoverflow.com/*",
+    "*://*.stackexchange.com/*",
     "debugger",
     "history",
     "idle",

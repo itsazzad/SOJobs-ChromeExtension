@@ -2,6 +2,30 @@
 
 console.log('SOJobs ...');
 
+const refreshSynonyms = (tag) => {
+  chrome.storage.local.get([`tag-${tag}`], function (result) {
+    // console.log(tag, result);
+    if (!result[tag]) {
+      let url = `https://api.stackexchange.com/2.2/tags/${encodeURIComponent(tag)}/synonyms?order=desc&sort=creation&site=stackoverflow`;
+      // console.log(url);
+
+      fetch(url)
+        .then(response => response.json())
+        .then(response => {
+          for (const element of response.items) {
+            chrome.storage.local.set({ [`tag-${element.from_tag}`]: tag }, () => {
+              // console.log(tag, element.from_tag);
+            });
+          }
+
+        })
+        .catch(error => {
+          console.error(error);
+        })
+    }
+  });
+};
+
 const start = () => {
   document.querySelectorAll('#content .listResults .-job').forEach((item, index) => {
     let data = {
@@ -12,7 +36,16 @@ const start = () => {
       data.company = tag.innerText.trim();
     });
     item.querySelectorAll('div > .post-tag').forEach((tag) => {
-      data.tags.push(tag.innerText.trim());
+      tag = tag.innerText.trim();
+      refreshSynonyms(tag);
+      chrome.storage.local.get([`tag-${tag}`], function (result) {
+        // console.log(result);
+        if (result) {
+          data.tags.push(result);
+        } else {
+          data.tags.push(tag);
+        }
+      });
     });
     let key = `jobid-${item.dataset.jobid}`;
     let value = JSON.stringify(data);
@@ -25,25 +58,30 @@ const start = () => {
 const processData = () => {
   chrome.storage.local.get(null, (obj) => {
     // console.log(obj);
-    const allKeys = Object.keys(obj);
+    // const allKeys = Object.keys(obj);
     // console.log(allKeys);
 
     const tagsByCompany = {};
     for (const prop in obj) {
       if (obj.hasOwnProperty(prop)) {
-        const data = JSON.parse(obj[prop]);
-        // console.log(prop, data);
-        data.tags.forEach(tag => {
-          if (data.company in tagsByCompany) {
-            if (tag in tagsByCompany[data.company]) {
-              tagsByCompany[data.company][tag]++;
+        // console.log(prop, obj);
+        try {
+          const data = JSON.parse(obj[prop]);
+          // console.log(prop, data);
+          data.tags.forEach(tag => {
+            if (data.company in tagsByCompany) {
+              if (tag in tagsByCompany[data.company]) {
+                tagsByCompany[data.company][tag]++;
+              } else {
+                tagsByCompany[data.company][tag] = 1;
+              }
             } else {
-              tagsByCompany[data.company][tag] = 1;
+              tagsByCompany[data.company] = {};
             }
-          } else {
-            tagsByCompany[data.company] = {};
-          }
-        });
+          });
+        } catch (e) {
+          //Not a job data
+        }
       }
     }
     console.log(tagsByCompany);
@@ -85,11 +123,11 @@ const processCompanyForTags = (data) => {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   sendResponse(request);
   if (request.greeting === 'hello') {
-    if (typeof request.pg === 'undefined' || request.pg === '1' || request.pg === '' || request.pg === null) {
-      chrome.storage.local.clear();
-      chrome.storage.sync.clear();
-      console.log('Storage cleared!')
-    }
+    // if (typeof request.pg === 'undefined' || request.pg === '1' || request.pg === '' || request.pg === null) {
+    chrome.storage.local.clear();
+    chrome.storage.sync.clear();
+    console.log('Storage cleared!')
+    // }
   }
 });
 
