@@ -2,28 +2,47 @@
 
 console.log('SOJobs ...');
 
-const refreshSynonyms = (tag) => {
-  chrome.storage.local.get([`tag-${tag}`], function (result) {
-    // console.log(tag, result);
-    if (!result[tag]) {
-      let url = `https://api.stackexchange.com/2.2/tags/${encodeURIComponent(tag)}/synonyms?order=desc&sort=creation&site=stackoverflow`;
-      // console.log(url);
+async function getLocal(key) {
+  return new Promise(resolve => {
+    chrome.storage.local.get([key], function (result) {
+      resolve(result[key]);
+    })
+  })
+}
+async function setLocal(key, value) {
+  return new Promise(resolve => {
+    chrome.storage.local.set({ [key]: value }, () => {
+      resolve(value);
+    });
+  })
+}
+async function fetchRemoteTag(tag) {
+  let url = `https://api.stackexchange.com/2.2/tags/${encodeURIComponent(tag)}/synonyms?order=desc&sort=creation&site=stackoverflow`;
+  console.log(url);
 
-      fetch(url)
-        .then(response => response.json())
-        .then(response => {
-          for (const element of response.items) {
-            chrome.storage.local.set({ [`tag-${element.from_tag}`]: tag }, () => {
-              // console.log(tag, element.from_tag);
-            });
-          }
+  try {
+    const synonymsResponse = await fetch(url);
+    const synonyms = await synonymsResponse.json();
+    return synonyms;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}
 
-        })
-        .catch(error => {
-          console.error(error);
-        })
+
+const refreshSynonyms = async (tag) => {
+  const result = await getLocal(`tag-${tag}`);
+  console.log(tag, result)
+
+  if (!result[tag]) {
+    const synonyms = await fetchRemoteTag(tag)
+    if (synonyms) {
+      for (const element of synonyms.items) {
+        await setLocal(`tag-${element.from_tag}`, tag);
+      }
     }
-  });
+  }
 };
 
 const start = () => {
@@ -35,58 +54,59 @@ const start = () => {
     item.querySelectorAll('h3 > span:first-child').forEach((tag) => {
       data.company = tag.innerText.trim();
     });
-    item.querySelectorAll('div > .post-tag').forEach((tag) => {
-      tag = tag.innerText.trim();
-      refreshSynonyms(tag);
-      chrome.storage.local.get([`tag-${tag}`], function (result) {
-        // console.log(result);
+    const postTags = item.querySelectorAll('div > .post-tag');
+    (async () => {
+      for (let tag of postTags) {
+        tag = tag.innerText.trim();
+        await refreshSynonyms(tag);
+        const result = await getLocal(`tag-${tag}`);
+        console.log(result);
+
         if (result) {
           data.tags.push(result);
         } else {
           data.tags.push(tag);
         }
-      });
+      }
     });
+
     let key = `jobid-${item.dataset.jobid}`;
     let value = JSON.stringify(data);
-    chrome.storage.local.set({ [key]: value }, () => {
-      // console.log(key, value);
-    });
+    await setLocal(key, value);
   });
 };
 
-const processData = () => {
-  chrome.storage.local.get(null, (obj) => {
-    // console.log(obj);
-    // const allKeys = Object.keys(obj);
-    // console.log(allKeys);
+const processData = async () => {
+  const obj = await getLocal(null);
+  // console.log(obj);
+  // const allKeys = Object.keys(obj);
+  // console.log(allKeys);
 
-    const tagsByCompany = {};
-    for (const prop in obj) {
-      if (obj.hasOwnProperty(prop)) {
-        // console.log(prop, obj);
-        try {
-          const data = JSON.parse(obj[prop]);
-          // console.log(prop, data);
-          data.tags.forEach(tag => {
-            if (data.company in tagsByCompany) {
-              if (tag in tagsByCompany[data.company]) {
-                tagsByCompany[data.company][tag]++;
-              } else {
-                tagsByCompany[data.company][tag] = 1;
-              }
+  const tagsByCompany = {};
+  for (const prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      // console.log(prop, obj);
+      try {
+        const data = JSON.parse(obj[prop]);
+        // console.log(prop, data);
+        data.tags.forEach(tag => {
+          if (data.company in tagsByCompany) {
+            if (tag in tagsByCompany[data.company]) {
+              tagsByCompany[data.company][tag]++;
             } else {
-              tagsByCompany[data.company] = {};
+              tagsByCompany[data.company][tag] = 1;
             }
-          });
-        } catch (e) {
-          //Not a job data
-        }
+          } else {
+            tagsByCompany[data.company] = {};
+          }
+        });
+      } catch (e) {
+        //Not a job data
       }
     }
-    console.log(tagsByCompany);
-    processCompanyForTags(tagsByCompany);
-  });
+  }
+  console.log(tagsByCompany);
+  processCompanyForTags(tagsByCompany);
 };
 
 const processCompanyForTags = (data) => {
@@ -120,13 +140,23 @@ const processCompanyForTags = (data) => {
   console.log(objSorted);
 };
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
   sendResponse(request);
   if (request.greeting === 'hello') {
     // if (typeof request.pg === 'undefined' || request.pg === '1' || request.pg === '' || request.pg === null) {
-    chrome.storage.local.clear();
-    chrome.storage.sync.clear();
-    console.log('Storage cleared!')
+    // chrome.storage.local.clear();
+    // chrome.storage.sync.clear();
+    const obj = await getLocal(null);
+    for (const prop in obj) {
+      if (obj.hasOwnProperty(prop)) {
+        // console.log(prop);
+        if (prop.startsWith('jobid-')) {
+          chrome.storage.local.remove(prop, () => {
+            console.log(prop, 'removed');
+          });
+        }
+      }
+    }
     // }
   }
 });
