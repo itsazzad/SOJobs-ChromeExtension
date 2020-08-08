@@ -4,6 +4,9 @@
   "engines": {
     "node": ">=0.8.0"
   },
+  "scripts": {
+    "preinstall": "npx npm-force-resolutions"
+  },
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/polyfill": "7.2.5",
@@ -55,5 +58,8 @@
   },
   "dependencies": {
     "eslint-scope": "^5.0.0"
+  },
+  "resolutions": {
+    "graceful-fs": "4.2.4"
   }
 }
